@@ -1,12 +1,11 @@
 #include"Tester.h"
 
 #include<DenseTrie/DenseTrie.h>
+#include<assert.h>
+#include<chrono>
 #include<fstream>
 #include<map>
 #include<random>
-#include <thread>         // std::this_thread::sleep_for
-#include <chrono>         // std::chrono::seconds
-
 using namespace std;
 
 Tester::Tester(){
@@ -54,7 +53,5 @@ void Tester::testEnableDisable(const char *fileName,unsigned long long trialCoun
                 break;
             }
         }
-
-//        this_thread::sleep_for(chrono::milliseconds(100));
     }
 }
