@@ -1,4 +1,5 @@
 #include"DenseTrie/DenseTrie.h"
+#include"Tester.h"
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -16,6 +17,7 @@ void basicUsageExample(){
 
     clog<<"Consolidating"<<endl;
     dt->consolidate();
+    dt->dumpData();
 
     clog<<"Please input strings: (use Ctrl-D to quit)"<<endl;
     while(cin>>str){
@@ -65,6 +67,8 @@ void advancedUsageExample_TargetSide(){
 int main(){
 //    basicUsageExample();
 
-    advancedUsageExample_HostSide();
-    advancedUsageExample_TargetSide();
+//    advancedUsageExample_HostSide();
+//    advancedUsageExample_TargetSide();
+
+    Tester().testEnableDisable("WordsList/words.txt",static_cast<unsigned long long>(-1));
 }

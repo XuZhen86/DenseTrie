@@ -5,10 +5,12 @@ CONFIG -= qt
 
 SOURCES += \
         DenseTrie/DenseTrie.cpp \
-        Main.cpp
+        Main.cpp \
+        Tester.cpp
 
 HEADERS += \
-    DenseTrie/DenseTrie.h
+    DenseTrie/DenseTrie.h \
+    Tester.h
 
 DISTFILES += \
     WordsList/debugWords.txt \

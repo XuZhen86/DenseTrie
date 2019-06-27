@@ -113,8 +113,11 @@ void DenseTrie::consolidate(){
     fprintf(stderr,"\n");
 #endif
 
-//    vector<unsigned int> trie(1,static_cast<unsigned int>(this->childs->at(0).size()));
     vector<unsigned int> trie;
+    if(this->childs->at(0).size()==1){
+        trie.push_back(1);
+    }
+
     for(size_t nodeNum=0;nodeNum<this->alphabets->size();nodeNum++){
         if(!this->childs->at(nodeNum).empty()){
             if(this->childs->at(nodeNum).size()>1){
@@ -253,11 +256,14 @@ size_t DenseTrie::findIndex(const char *str) const{
                 }
 
                 if(this->getIsSize1(nextIdx)){
+                    idx=this->getIndex(nextIdx);
                     size=1;
-                    idx=this->getIndex(nextIdx);
                 }else{
-                    size=this->trie[this->getIndex(nextIdx)-1];
                     idx=this->getIndex(nextIdx);
+                    if(!idx){
+                        return 0;
+                    }
+                    size=this->trie[this->getIndex(nextIdx)-1];
                 }
 
                 break;
