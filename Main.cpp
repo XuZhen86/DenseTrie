@@ -5,6 +5,20 @@
 #include<string>
 using namespace std;
 
+void basicUsageExample();
+void advancedUsageExample_HostSide();
+void advancedUsageExample_TargetSide();
+
+int main(){
+//    basicUsageExample();
+
+//    advancedUsageExample_HostSide();
+//    advancedUsageExample_TargetSide();
+
+    Tester().testInitPerformance("WordsList/words.txt",10);
+    Tester().testQueryPerformance("WordsList/words.txt",1,1000000);
+}
+
 void basicUsageExample(){
     DenseTrie *dt=new DenseTrie();
 
@@ -62,13 +76,4 @@ void advancedUsageExample_TargetSide(){
 
     clog<<"Target: Finished"<<endl;
     delete dt;
-}
-
-int main(){
-//    basicUsageExample();
-
-//    advancedUsageExample_HostSide();
-//    advancedUsageExample_TargetSide();
-
-    Tester().testEnableDisable("WordsList/words.txt",static_cast<unsigned long long>(-1));
 }
