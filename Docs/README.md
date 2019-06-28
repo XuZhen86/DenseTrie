@@ -1,15 +1,12 @@
 # DenseTrie
 DenseTrie is an implementation of the Trie data structure. It is implemented in C++ and is easily portable to other programming languages. By having various optimization techniques in design, DenseTrie offers extraordinary memory performance over other implementations. Furthermore, DenseTrie supports serialize to and deserialize from a given data file, allowing devices with tight memory space to load the Trie with minimal memory overhead.
-
 ## System Requirements
 Generally, DenseTrie should be compatible with systems in 2019. During initial testing, DenseTrie was compatible with ```arm-linux-gnueabihf```, ```x86_64-linux-gnu```, and ```x86_64-apple-darwin18.6.0```. In the case of porting to other platform and systems, DenseTrie requires the following:
 * A compiler that supports C++11
 * ```sizeof(unsigned int) == 4```
 * ```sizeof(size_t) >= 3```
-
 ## Getting Started
 Simply add [DenseTrie.cpp](https://github.com/XuZhen86/DenseTrie/blob/master/DenseTrie/DenseTrie.cpp) to your project folder and include [DenseTrie.h](https://github.com/XuZhen86/DenseTrie/blob/master/DenseTrie/DenseTrie.h) in any of your source files that uses DenseTrie. Just like using an STL library, it is that simple! Depending on your project configuration, please make sure [DenseTrie.cpp](https://github.com/XuZhen86/DenseTrie/blob/master/DenseTrie/DenseTrie.cpp) was compiled with your code.
-
 ## How to Use DenseTrie
 DenseTrie offers a set of functions for your code to interact with. For starters, you can stick with the basic use case to reduce memory cost of your program. For experts, you can try advanced use cases. Notice you may need to have deeper understandings of Trie data structure and Linux system to understand what is happening.
 ### Basic Use Case
@@ -38,7 +35,7 @@ dt->dumpData();
 ```
 5. Start querying from DenseTrie:
 ```C++
-bool reqult=dt->contains("AWordYouWant");
+bool result=dt->contains("AWordYouWant");
 ```
 6. Delete the object:
 ```C++
@@ -121,4 +118,5 @@ To showcase DenseTrie is having better performance than other approaches to the 
 DenseTrie was designed with various memory optimization schemes by efficiently storing data. Due to the complexity of the schemed implemented in DenseTrie, explanations are available upon request. Please do not hesitate to send me a message!
 ## Known Issues
 1. DenseTrie may not correctly handle null strings and may result in segmentation fault at runtime.
-2. Consolidate on maliciously crafted words file may led to depletion of internal available space and may result in memory corruption.
+2. Consolidate on maliciously crafted words file may lead to depletion of internal available space and may result in memory corruption.
+3. Consolidate with no inserted words may lead to undefined behavior.
