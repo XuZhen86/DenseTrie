@@ -13,6 +13,7 @@ HEADERS += \
     Tester/Tester.h
 
 DISTFILES += \
+    Docs/README.md \
     WordsList/debugWords.txt \
     WordsList/words.txt \
     WordsList/words2.txt
