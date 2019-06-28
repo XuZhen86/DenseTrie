@@ -105,14 +105,16 @@ while(cin>>str){
 ```
 ## Memory Performance
 The key design principle of DenseTrie is to have exceptional memory performance. The results are as follows:
-| Words File | Num of Words | File Size (Bytes) | Memory Needed After Consolidating (Approx. Bytes) | % Inflation | % Internal Available Space Used
-| --- | --- | --- | --- | --- | --- |
-| words.txt | 234937 | 2486824 | 3569264 | ~44% | ~21%
-| words2.txt | 466551 | 4863005 | 6410128 | ~32% | ~38%
+
+| Words File | Num of Words | File Size (Bytes) | Memory Needed After Consolidating (Approx. Bytes) | % Inflation | % Internal Available Space Used |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|  words.txt | 234937 | 2486824 | 3569264 | ~44% | ~21% |
+| words2.txt | 466551 | 4863005 | 6410128 | ~32% | ~38% |
 ## CPU Performance
 To showcase DenseTrie is having better performance than other approaches to the same problem, some performance tests were performed. In the tests, DenseTrie is compared to ```map<string,bool>()``` and sorted ```vector<pair<string,bool>>()```. The time used is determined by ```clock()```.
+
 | Operation | Times Repeated | DenseTrie | `map<string,bool>()` | Sorted `vector<pair<string,bool>>()` |
-| --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: |
 | Initialize | 10 | 1370018 | 2903290 | 3630436 |
 | Query | 1000000 | 1182920 | 4314058 | 8438793 |
 ## Optimization Schemes
