@@ -1,4 +1,4 @@
-#include"Tester.h"
+#include"Tester/Tester.h"
 
 #include<DenseTrie/DenseTrie.h>
 #include<assert.h>

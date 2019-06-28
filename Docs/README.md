@@ -1,0 +1,122 @@
+# DenseTrie
+DenseTrie is an implementation of the Trie data structure. It is implemented in C++ and is easily portable to other programming languages. By having various optimization techniques in design, DenseTrie offers extraordinary memory performance over other implementations. Furthermore, DenseTrie supports serialize to and deserialize from a given data file, allowing devices with tight memory space to load the Trie with minimal memory overhead.
+
+## System Requirements
+Generally, DenseTrie should be compatable with systems in 2019. During initial testing, DenseTrie was compatable with ```arm-linux-gnueabihf```, ```x86_64-linux-gnu```, and ```x86_64-apple-darwin18.6.0```. In the case of porting to other platform and systems, DenseTrie requires the folowing:
+* A compiler that supports C++11
+* ```sizeof(unsigned int) == 4```
+* ```sizeof(size_t) >= 3```
+
+## Gerring Started
+Simply add [DenseTrie.cpp](https://github.com/XuZhen86/DenseTrie/blob/master/DenseTrie/DenseTrie.cpp) to your project folder and include [DenseTrie.h](https://github.com/XuZhen86/DenseTrie/blob/master/DenseTrie/DenseTrie.h) in any of your source files that uses DenseTrie. Just like using an STL library, it is that simple! Depending on your project configuration, please make sure [DenseTrie.cpp](https://github.com/XuZhen86/DenseTrie/blob/master/DenseTrie/DenseTrie.cpp) was compiled with your code.
+
+## How to Use DenseTrie
+DenseTrie offers a set of functions for your code to interact with. For starters, you can stick with the basic use case to reduce memory cost of your program. For experts, you can try advanced use cases. Notice you may need to have deeper understandings of Trie data structure and Linux system to understand what is happening.
+### Basic Use Case
+The primary reason to use DenseTrie is to save memory during runtime. After adding all strings using ```DenseTrie::insert(const char *str)```, DenseTrie requires calling ```DenseTrie::consolidate()``` to consolidate the data and release the memory that would not be needed. Notice you cannot undo consolidate, that means you cannot extend the Trie data structure after you call ```DenseTrie::consolidate()```.
+1. Create the object:
+```C++
+DenseTrie *dt=new DenseTrie();
+```
+2. Open a file containing words and insert them into DenseTrie:
+```C++
+fstream fs("WordsList/words.txt",fstream::in);
+string str;
+while(fs>>str){
+    if(!str.empty()){
+        dt->insert(str.c_str());
+    }
+}
+```
+3. Consolidate to lock down the data and release redundant memory:
+```C++
+dt->consolidate();
+```
+4. (Optional) Dump data to ```stdout```, in case you are courious about what is stored in the object:
+```C++
+dt->dumpData();
+```
+5. Start querying from DenseTrie:
+```C++
+bool reqult=dt->contains("AWordYouWant");
+```
+6. Delete the object:
+```C++
+delete dt;
+```
+### Advanced Use Case: Temporarily Remove and Add a Word
+DenseTrie supports temporarily disabling and enabling a word. This is done through ```DenseTrie::disable(const char *str)``` , ```DenseTrie::enable(const char *str)```, and ```DenseTrie::contains(const char *str)``` functions.
+1. Create object, insert words, consolidate:
+```C++
+DenseTrie *dt=new DenseTrie();
+fstream fs("WordsList/words.txt",fstream::in);
+string str;
+while(fs>>str){
+    if(!str.empty()){
+        dt->insert(str.c_str());
+    }
+}
+dt->consolidate();
+```
+2. Disable a word:
+```C++
+bool result=dt->disable("AWordYouWant");
+```
+3. Before enabling a word, check if the operation if possible:
+```C++
+bool result=dt->containsSlot("AWordYouWant");
+```
+4. If ```result == true```, you can enable the word:
+```C++
+bool result=dt->enable("AWordYouWant");
+```
+### Advanced Use Case: Serialize to and Deserialize From Given File
+After calling ```DenseTrie::consolidate()```, you can use ```DenseTrie::serialize(const char *fileName)``` and ```DenseTrie::deserialize(const char *fileName)``` to export and import data with given file name. This feature is useful when you want to save the state of a DenseTrie object to a file and resume later. It also allows devices with limited memory space that cannot afford the consolidate operation, such as embedded devices, to benifit from DenseTrie. To use DenseTrie on a target machine with limited memory, you can complete the consolidate operation on a host machine, serialize to a file, and let the target machine load the file directly. In this way, the target machine could use DenseTrie without going though the relatively expensive consolidate operaiton.
+1. On host machine, load DenseTrie and consolidate:
+```C++
+DenseTrie *dt=new DenseTrie();
+fstream fs("WordsList/words.txt",fstream::in);
+string str;
+while(fs>>str){
+    if(!str.empty()){
+        dt->insert(str.c_str());
+    }
+}
+dt->consolidate();
+```
+2. Serialize the data to a file:
+```C++
+dt->serialize("myData.dat");
+```
+3. On target machine, create DenseTrie object. DenseTrie uses virtually no space when not loaded with data:
+```C++
+DenseTrie *dt=new DenseTrie();
+```
+4. Deserialize the data from the file generated by host machine. DenseTrie object is ready for querying immedeately after deserializing:
+```C++
+dt->deserialize("myData.dat");
+```
+5. Use the DenseTrie object as usual:
+```C++
+string str;
+while(cin>>str){
+    cout<<str<<" => "<<dt->contains(str.c_str())<<endl;
+}
+```
+## Memory Performance
+The key design principle of DenseTrie is to have exceptional memory performance. The results are as folows:
+| Words File | Num of Words | File Size (Bytes) | Memory Needed After Consolidating (Approx. Bytes) | % Inflation | % Internal Available Space Used
+| --- | --- | --- | --- | --- | --- |
+| words.txt | 234937 | 2486824 | 3569264 | ~44% | ~21%
+| words2.txt | 466551 | 4863005 | 6410128 | ~32% | ~38%
+## CPU Performance
+To showcase DenseTrie is having beter performance than other approaches to the same problem, some performance tests were performed. In the tests, DenseTrie is compared to ```map<string,bool>()``` and sorted ```vector<pair<string,bool>>()```. The time used is determined by ```clock()```.
+| Operation | Times Repeated | DenseTrie | `map<string,bool>()` | Sorted `vector<pair<string,bool>>()` |
+| --- | --- | --- | --- | --- |
+| Initialize | 10 | 1370018 | 2903290 | 3630436 |
+| Query | 1000000 | 1182920 | 4314058 | 8438793 |
+## Optimization Schemes
+DenseTrie was designed with various memory optimization schemes by efficiently storing data. Due to the complexity of the schemed implemented in DenseTrie, explanations are available upon request. Please do not hasitate to send me a message!
+## Known Issues
+1. DenseTrie may not correctly handle null strings and may result in segmentation fault at runtime.
+2. Consolidate on maliciously crafted words file may led to depletion of interal available space and may result in memory corruption.

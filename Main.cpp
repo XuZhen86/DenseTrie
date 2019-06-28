@@ -1,5 +1,6 @@
 #include"DenseTrie/DenseTrie.h"
-#include"Tester.h"
+#include"Tester/Tester.h"
+
 #include<fstream>
 #include<iostream>
 #include<string>

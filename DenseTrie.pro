@@ -6,11 +6,11 @@ CONFIG -= qt
 SOURCES += \
         DenseTrie/DenseTrie.cpp \
         Main.cpp \
-        Tester.cpp
+        Tester/Tester.cpp
 
 HEADERS += \
     DenseTrie/DenseTrie.h \
-    Tester.h
+    Tester/Tester.h
 
 DISTFILES += \
     WordsList/debugWords.txt \
