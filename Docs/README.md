@@ -103,10 +103,24 @@ while(cin>>str){
 ## Memory Performance
 The key design principle of DenseTrie is to have exceptional memory performance. The results are as follows:
 
-| Words File | Num of Words | File Size (Bytes) | Memory Needed After Consolidating (Approx. Bytes) | % Inflation | % Internal Available Space Used |
+| Words File | Num of Words | File Size | Persistent Memory Needed | Inflation Over Words File | % Internal Available Space Used |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-|  words.txt | 234937 | 2486824 | 3569264 | ~44% | ~21% |
-| words2.txt | 466551 | 4863005 | 6410128 | ~32% | ~38% |
+|  words.txt | 234937 | 2486824B, ~2.37MB | 3569264B, ~3.40MB | 0.43 | 21% |
+| words2.txt | 466551 | 4863005B, ~4.64MB | 6410128B, ~6.11MB | 0.32 | 38% |
+
+Conventional implementation of Trie requires a lot more memory, assuming in conventional implementation, one node costs: 1 byte for storing the letter, 256*4 bytes for storing the children array, and 1 byte for storing marking information:
+
+| Words File | Num of Words | File Size | Memory Needed (Calculated) | Inflation Over Words File |
+| :---: | :---: | :---: | :---: | :---: |
+|  words.txt | 234937 | 2486824B, ~2.37MB | 915516216B, ~873.10MB | 367.14 |
+| words2.txt | 466551 | 4863005B, ~4.64MB | 1644197832B, ~1568.02MB | 337.10 |
+
+In comparison, DenseTrie uses less than 0.5% of memory space than conventioal implementation:
+
+| DenseTrie | Conventional | % Space Used |
+| :---: | :---: | :---: |
+| 3.40MB | 873.10MB | 0.3894% |
+| 6.11MB | 1568.02MB | 0.3896% |
 ## CPU Performance
 To showcase DenseTrie is having better performance than other approaches to the same problem, some performance tests were performed. In the tests, DenseTrie is compared to ```map<string,bool>()``` and sorted ```vector<pair<string,bool>>()```. The time used is determined by ```clock()```.
 
