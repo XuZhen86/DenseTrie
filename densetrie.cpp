@@ -98,26 +98,33 @@ void DenseTrie::consolidate(){
     nodeNum2Idx.at(0)=0;
 
     std::vector<unsigned int> trie;
+    // Always push node0's size
+    // If node0's size >1, it will be pushed later
     if(childs->at(0).size()==1){
         trie.push_back(1);
     }
 
     for(size_t nodeNum=0;nodeNum<alphabets->size();nodeNum++){
-        if(!childs->at(nodeNum).empty()){
-            if(childs->at(nodeNum).size()>1){
-                trie.push_back(static_cast<unsigned int>(childs->at(nodeNum).size()));
-            }
+        // Skip empty node
+        if(childs->at(nodeNum).empty()){
+            continue;
+        }
 
-            for(auto nextNode:childs->at(nodeNum)){
-                const char nextNodeChar=nextNode.first;
-                const size_t nextNodeNum=nextNode.second;
+        // Push the size if >1
+        if(childs->at(nodeNum).size()>1){
+            trie.push_back(static_cast<unsigned int>(childs->at(nodeNum).size()));
+        }
 
-                trie.push_back(
-                            static_cast<unsigned int>(nextNodeChar)<<24
-                            |static_cast<unsigned int>(isWords->at(nextNodeNum))<<23
-                            |static_cast<unsigned int>(childs->at(nextNodeNum).size()==1)<<22
-                            |static_cast<unsigned int>(childs->at(nextNodeNum).empty()?0:nodeNum2Idx.at(nextNodeNum)));
-            }
+        // Push all childs
+        for(auto nextNode:childs->at(nodeNum)){
+            const char nextNodeChar=nextNode.first;
+            const size_t nextNodeNum=nextNode.second;
+
+            trie.push_back(
+                        static_cast<unsigned int>(nextNodeChar)<<24
+                        |static_cast<unsigned int>(isWords->at(nextNodeNum))<<23
+                        |static_cast<unsigned int>(childs->at(nextNodeNum).size()==1)<<22
+                        |static_cast<unsigned int>(childs->at(nextNodeNum).empty()?0:nodeNum2Idx.at(nextNodeNum)));
         }
     }
 
@@ -126,7 +133,7 @@ void DenseTrie::consolidate(){
     this->trie=new unsigned int[trieSize];
     copy(trie.begin(),trie.end(),this->trie);
 
-    // Clean upused objects
+    // Cleanup used objects
     delete alphabets;
     delete isWords;
     delete childs;
@@ -168,77 +175,81 @@ bool DenseTrie::contains(const char *str){
 }
 
 bool DenseTrie::containsSlot(const char *str){
-    // findIndex() returns 0 if no slot is found
-    return findIndex(str)!=0;
+    // findIndex() returns 0 if slot is not found
+    return findIndex(str);
 }
 
 bool DenseTrie::serialize(const char *fileName){
     std::fstream f(fileName,std::fstream::out|std::fstream::binary);
 
-    if(f.is_open()){
-        // Dump trie content to file
-        f.write(reinterpret_cast<const char *>(trie),static_cast<long long>(trieSize*sizeof(unsigned int)));
-        f.close();
-
-        return true;
+    if(!f.is_open()){
+        return false;
     }
 
-    return false;
+    // Dump trie content to file
+    f.write(reinterpret_cast<const char *>(trie),static_cast<long long>(trieSize*sizeof(unsigned int)));
+    f.close();
+
+    return true;
 }
 
 bool DenseTrie::deserialize(const char *fileName){
     std::fstream f(fileName,std::fstream::in|std::fstream::binary);
 
-    if(f.is_open()){
-        // Get trie size and allocate memory
-        f.seekg(0,std::ios_base::end);
-        trieSize=static_cast<size_t>(f.tellg())/sizeof(unsigned int);
-        trie=new unsigned int[trieSize];
-        f.seekg(0,std::ios_base::beg);
-
-        // Dump file content to file
-        f.read(reinterpret_cast<char *>(trie),static_cast<long long>(trieSize*sizeof(unsigned int)));
-        f.close();
-
-        return true;
+    if(!f.is_open()){
+        return false;
     }
 
-    return false;
+    // Get trie size and allocate memory
+    f.seekg(0,std::ios_base::end);
+    trieSize=static_cast<size_t>(f.tellg())/sizeof(unsigned int);
+    trie=new unsigned int[trieSize];
+    f.seekg(0,std::ios_base::beg);
+
+    // Dump file content to file
+    f.read(reinterpret_cast<char *>(trie),static_cast<long long>(trieSize*sizeof(unsigned int)));
+    f.close();
+
+    return true;
 }
 
 void DenseTrie::dump(){
     // Check for trie==nullptr is omitted
 
     for(size_t i=0;i<trieSize;i++){
-        // If it is a size node
+        // If it is a size node, pnly print the size
         if(trie[i]<0x100){
-            // Print the size only
             printf("trie[%lu]=%d\n",i,trie[i]);
-        }else{
-            // Decompose the node and print its contents
-            printf("trie[%lu]={char=%c,isWord=%d,isSize1=%d,index=%u}\n",
-                   i,
-                   getChar(i),
-                   getIsWord(i),
-                   getIsSize1(i),
-                   getIndex(i));
+            continue;
         }
+
+        // Otherwise decompose the node and print its contents
+        printf("trie[%lu]={char=%c,isWord=%d,isSize1=%d,index=%u}\n",
+               i,
+               getChar(i),
+               getIsWord(i),
+               getIsSize1(i),
+               getIndex(i));
     }
 }
 
 char DenseTrie::getChar(const size_t index) const{
+    // Bit 31 to 24
     return static_cast<char>(trie[index]>>24);
 }
 
 bool DenseTrie::getIsWord(const size_t index) const{
+    // Bit 23
     return static_cast<bool>(trie[index]&0x800000);
 }
 
 bool DenseTrie::getIsSize1(const size_t index) const{
+    // Bit 22
     return static_cast<bool>(trie[index]&0x400000);
 }
 
 unsigned int DenseTrie::getIndex(const size_t index) const{
+    // Bit 21 to 0
     return static_cast<unsigned int>(trie[index]&0x3fffff);
 }
 
@@ -264,43 +275,31 @@ size_t DenseTrie::findIndex(const char *str) const{
         bool foundNextIdx=false;
 
         for(size_t nextIdx=idx;nextIdx<idx+size;nextIdx++){
-            if(getChar(nextIdx)==str[strIdx]){
-                // If this is the last char, return answer
-                if(!str[strIdx+1]){
-                    return nextIdx;
-                }
-
-                // This is not the last char, need to goto next node
-                idx=getIndex(nextIdx);
-
-                // Special process if next node is a size1 node, dead end will not be size1
-                if(getIsSize1(nextIdx)){
-                    size=1;
-                }else if(idx){ // Normal process to get size if not dead end
-                    size=trie[idx-1];
-                }else{ // Dead end, return not found
-                    return 0;
-                }
-
-                // Special process if next node is a size1 node
-//                if(getIsSize1(nextIdx)){
-//                    idx=getIndex(nextIdx);
-//                    size=1;
-//                }else{
-//                    idx=getIndex(nextIdx);
-
-//                    // If there is no next node, return not found
-//                    if(!idx){
-//                        return 0;
-//                    }
-
-//                    size=trie[getIndex(nextIdx)-1];
-//                }
-
-                // If get to this step, it found a valid next index
-                foundNextIdx=true;
-                break;
+            // Skip to next index if char is different
+            if(getChar(nextIdx)!=str[strIdx]){
+                continue;
             }
+
+            // If this is the last char, return answer
+            if(!str[strIdx+1]){
+                return nextIdx;
+            }
+
+            // This is not the last char, need to goto next node
+            idx=getIndex(nextIdx);
+
+            // Special process if next node is a size1 node, dead end will not be size1
+            if(getIsSize1(nextIdx)){
+                size=1;
+            }else if(idx){ // Normal process to get size if not dead end
+                size=trie[idx-1];
+            }else{ // Dead end, return not found
+                return 0;
+            }
+
+            // If get to this step, it found a valid next index
+            foundNextIdx=true;
+            break;
         }
 
         // Did not find index for next char, return not found
