@@ -206,7 +206,7 @@ bool DenseTrie::deserialize(const char *fileName){
     trie=new unsigned int[trieSize];
     f.seekg(0,std::ios_base::beg);
 
-    // Dump file content to file
+    // Dump file content to trie
     f.read(reinterpret_cast<char *>(trie),static_cast<long long>(trieSize*sizeof(unsigned int)));
     f.close();
 
