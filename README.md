@@ -22,7 +22,7 @@ fstream f("WordsList/words.txt",fstream::in);
 string str;
 while(f>>str){
     if(!str.empty()){
-        d->insert(str.c_str());
+        d->insert(str);
     }
 }
 ```
@@ -51,7 +51,7 @@ fstream f("WordsList/words.txt",fstream::in);
 string str;
 while(f>>str){
     if(!str.empty()){
-        d->insert(str.c_str());
+        d->insert(str);
     }
 }
 d->consolidate();
@@ -77,7 +77,7 @@ fstream f("WordsList/words.txt",fstream::in);
 string str;
 while(f>>str){
     if(!str.empty()){
-        d->insert(str.c_str());
+        d->insert(str);
     }
 }
 d->consolidate();
@@ -98,7 +98,7 @@ d->deserialize("myData.dat");
 ```C++
 string str;
 while(cin>>str){
-    cout<<str<<" => "<<d->contains(str.c_str())<<endl;
+    cout<<str<<" => "<<d->contains(str)<<endl;
 }
 ```
 ## Memory Performance
