@@ -121,7 +121,6 @@ void DenseTrie::consolidate(){
             trie.push_back(
                         static_cast<unsigned int>(nextNodeChar)<<24
                         |static_cast<unsigned int>(isWords->at(nextNodeNum))<<23
-                        |static_cast<unsigned int>(childs->at(nextNodeNum).size()==1)<<22
                         |static_cast<unsigned int>(childs->at(nextNodeNum).empty()?0:nodeNum2Idx.at(nextNodeNum))
             );
         }
@@ -245,11 +244,10 @@ void DenseTrie::dump(){
 
         // Otherwise decompose the node and print its contents
         printf(
-                    "trie[%lu]={char=%c,isWord=%d,isSize1=%d,index=%u}\n",
+                    "trie[%lu]={char=%c,isWord=%d,index=%u}\n",
                     i,
                     getChar(i),
                     getIsWord(i),
-                    getIsSize1(i),
                     getIndex(i)
         );
     }
@@ -265,14 +263,16 @@ bool DenseTrie::getIsWord(const size_t index) const{
     return static_cast<bool>(trie[index]&0x800000);
 }
 
-bool DenseTrie::getIsSize1(const size_t index) const{
-    // Bit 22
-    return static_cast<bool>(trie[index]&0x400000);
+bool DenseTrie::checkIfIndex(const size_t index) const{
+    // Check if only contains an index. With this datastructure,
+    // it is gaurenteed to have a valid number after bit 22
+    // Since '\0' is not a readable character
+    return static_cast<bool>(!(trie[index] >> 23));
 }
 
 unsigned int DenseTrie::getIndex(const size_t index) const{
-    // Bit 21 to 0
-    return static_cast<unsigned int>(trie[index]&0x3fffff);
+    // Bit 22 to 0
+    return static_cast<unsigned int>(trie[index]&0x7fffff);
 }
 
 void DenseTrie::setIsWord(const size_t index,const bool isWord){
@@ -291,36 +291,27 @@ size_t DenseTrie::findIndex(const char *str) const{
         return 0;
     }
 
-    size_t idx=1,size=trie[0];
+    size_t idx=1,size;
 
     for(size_t strIdx=0;str[strIdx];strIdx++){
         bool foundNextIdx=false;
-
-        for(size_t nextIdx=idx;nextIdx<idx+size;nextIdx++){
+        
+        // Assume there are multiple starting characters, establish size for loop
+        size = checkIfIndex(idx - 1) ? trie[idx - 1] : 1;
+        
+        for (size_t nextIdx = idx;nextIdx < idx + size;nextIdx++) {
             // Skip to next index if char is different
-            if(getChar(nextIdx)!=str[strIdx]){
+            if (getChar(nextIdx) != str[strIdx]) {
                 continue;
             }
 
             // If this is the last char, return answer
-            if(!str[strIdx+1]){
+            if (!str[strIdx + 1]) {
                 return nextIdx;
             }
 
-            // This is not the last char, need to goto next node
-            idx=getIndex(nextIdx);
-
-            // Special process if next node is a size1 node, dead end will not be size1
-            if(getIsSize1(nextIdx)){
-                size=1;
-            }else if(idx){ // Normal process to get size if not dead end
-                size=trie[idx-1];
-            }else{ // Dead end, return not found
-                return 0;
-            }
-
-            // If get to this step, it found a valid next index
-            foundNextIdx=true;
+            idx = getIndex(nextIdx);
+            foundNextIdx = true;
             break;
         }
 

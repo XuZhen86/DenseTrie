@@ -44,7 +44,7 @@ class DenseTrie{
 
     char getChar(const size_t index) const;
     bool getIsWord(const size_t index) const;
-    bool getIsSize1(const size_t index) const;
+    bool checkIfIndex(const size_t index) const;
     unsigned int getIndex(const size_t index) const;
     void setIsWord(const size_t index,const bool isWord);
     size_t findIndex(const char *str) const;
