@@ -297,8 +297,10 @@ size_t DenseTrie::findIndex(const char *str) const{
         bool foundNextIdx=false;
         
         // Assume there are multiple starting characters, establish size for loop
+        // else it is just a single character element
         size=checkIfIndex(idx-1)?trie[idx-1]:1;
         
+        // loop through elements to see if the character exists
         for(size_t nextIdx=idx;nextIdx<idx+size;nextIdx++){
             // Skip to next index if char is different
             if(getChar(nextIdx)!=str[strIdx]){
