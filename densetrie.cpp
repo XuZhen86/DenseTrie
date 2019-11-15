@@ -299,14 +299,14 @@ size_t DenseTrie::findIndex(const char *str) const{
         // Assume there are multiple starting characters, establish size for loop
         size=checkIfIndex(idx-1)?trie[idx-1]:1;
         
-        for(size_t nextIdx=idx;nextIdx<idx+size;nextIdx++) {
+        for(size_t nextIdx=idx;nextIdx<idx+size;nextIdx++){
             // Skip to next index if char is different
-            if(getChar(nextIdx)!=str[strIdx]) {
+            if(getChar(nextIdx)!=str[strIdx]){
                 continue;
             }
 
             // If this is the last char, return answer
-            if(!str[strIdx+1]) {
+            if(!str[strIdx+1]){
                 return nextIdx;
             }
 
