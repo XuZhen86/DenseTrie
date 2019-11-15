@@ -267,7 +267,7 @@ bool DenseTrie::checkIfIndex(const size_t index) const{
     // Check if only contains an index. With this datastructure,
     // it is gaurenteed to have a valid number after bit 22
     // Since '\0' is not a readable character
-    return static_cast<bool>(!(trie[index] >> 23));
+    return static_cast<bool>(!(trie[index]>>23));
 }
 
 unsigned int DenseTrie::getIndex(const size_t index) const{
@@ -297,21 +297,21 @@ size_t DenseTrie::findIndex(const char *str) const{
         bool foundNextIdx=false;
         
         // Assume there are multiple starting characters, establish size for loop
-        size = checkIfIndex(idx - 1) ? trie[idx - 1] : 1;
+        size=checkIfIndex(idx-1)?trie[idx-1]:1;
         
-        for (size_t nextIdx = idx;nextIdx < idx + size;nextIdx++) {
+        for(size_t nextIdx=idx;nextIdx<idx+size;nextIdx++) {
             // Skip to next index if char is different
-            if (getChar(nextIdx) != str[strIdx]) {
+            if(getChar(nextIdx)!=str[strIdx]) {
                 continue;
             }
 
             // If this is the last char, return answer
-            if (!str[strIdx + 1]) {
+            if(!str[strIdx+1]) {
                 return nextIdx;
             }
 
-            idx = getIndex(nextIdx);
-            foundNextIdx = true;
+            idx=getIndex(nextIdx);
+            foundNextIdx=true;
             break;
         }
 
