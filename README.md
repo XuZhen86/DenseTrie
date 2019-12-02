@@ -106,8 +106,8 @@ The key design principle of DenseTrie is to have exceptional memory performance.
 
 | Words File | Num of Words |     File Size     | Persistent Memory Needed | Inflation Over Words File | % Internal Available Space Used |
 |------------|:------------:|:-----------------:|:------------------------:|:-------------------------:|:-------------------------------:|
-|  words.txt |    234937    | 2486824B, ~2.37MB |     3569264B, ~3.40MB    |            0.43           |               21%               |
-| words2.txt |    466551    | 4863005B, ~4.64MB |     6410128B, ~6.11MB    |            0.32           |               38%               |
+|  words.txt |    234937    | 2486824B, ~2.37MB |     3569264B, ~3.40MB    |            0.43           |               11%               |
+| words2.txt |    466551    | 4863005B, ~4.64MB |     6410128B, ~6.11MB    |            0.32           |               19%               |
 
 Conventional implementation of Trie requires a lot more memory, assuming in conventional implementation, one node costs: 1 byte for storing the letter, 256*4 bytes for storing the children array, and 1 byte for storing marking information:
 
